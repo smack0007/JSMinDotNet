@@ -1,3 +1,9 @@
+# JSMinDotNet
+
+A simple port of JSMin by Douglas Crockford from C to C# 9. This code is just a thought experiment. Please don't write code like this.
+
+# JSMin Readme
+
 JSMin, The JavaScript Minifier
 
 Douglas Crockford

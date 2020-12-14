@@ -34,7 +34,8 @@ int look_ahead = EOF;
 int the_x = EOF;
 int the_y = EOF;
 
-void error(string @string) {
+void error(string @string)
+{
     Console.Error.WriteLine("JSMIN Error: ");
     Console.Error.WriteLine(@string);
     Environment.Exit(1);
@@ -44,7 +45,8 @@ void error(string @string) {
         dollar sign, or non-ASCII character.
 */
 
-bool is_alphanum(int codeunit) {
+bool is_alphanum(int codeunit)
+{
     return (
         (codeunit >= 'a' && codeunit <= 'z')
         || (codeunit >= '0' && codeunit <= '9')
@@ -62,16 +64,20 @@ bool is_alphanum(int codeunit) {
         linefeed.
 */
 
-int get() {
+int get()
+{
     int codeunit = look_ahead;
     look_ahead = EOF;
-    if (codeunit == EOF) {
+    if (codeunit == EOF)
+    {
         codeunit = Console.In.Read();
     }
-    if (codeunit >= ' ' || codeunit == '\n' || codeunit == EOF) {
+    if (codeunit >= ' ' || codeunit == '\n' || codeunit == EOF)
+    {
         return codeunit;
     }
-    if (codeunit == '\r') {
+    if (codeunit == '\r')
+    {
         return '\n';
     }
     return ' ';
@@ -81,7 +87,8 @@ int get() {
 /* peek -- get the next character without advancing.
 */
 
-int peek() {
+int peek()
+{
     look_ahead = get();
     return look_ahead;
 }
@@ -91,34 +98,42 @@ int peek() {
         if a '/' is followed by a '/' or '*'.
 */
 
-int next() {
+int next()
+{
     int codeunit = get();
-    if  (codeunit == '/') {
-        switch (peek()) {
-        case '/':
-            for (;;) {
-                codeunit = get();
-                if (codeunit <= '\n') {
-                    break;
-                }
-            }
-            break;
-        case '*':
-            get();
-            while (codeunit != ' ') {
-                switch (get()) {
-                case '*':
-                    if (peek() == '/') {
-                        get();
-                        codeunit = ' ';
+    if (codeunit == '/')
+    {
+        switch (peek())
+        {
+            case '/':
+                for (; ; )
+                {
+                    codeunit = get();
+                    if (codeunit <= '\n')
+                    {
+                        break;
                     }
-                    break;
-                case EOF:
-                    error("Unterminated comment.");
-                    break;
                 }
-            }
-            break;
+                break;
+            case '*':
+                get();
+                while (codeunit != ' ')
+                {
+                    switch (get())
+                    {
+                        case '*':
+                            if (peek() == '/')
+                            {
+                                get();
+                                codeunit = ' ';
+                            }
+                            break;
+                        case EOF:
+                            error("Unterminated comment.");
+                            break;
+                    }
+                }
+                break;
         }
     }
     the_y = the_x;
@@ -136,37 +151,47 @@ int next() {
    '(' or ',' or '='.
 */
 
-void action(int determined) {
-    if (determined == 1) {
+void action(int determined)
+{
+    if (determined == 1)
+    {
         Console.Write((char)the_a);
         if (
             (the_y == '\n' || the_y == ' ')
             && (the_a == '+' || the_a == '-' || the_a == '*' || the_a == '/')
             && (the_b == '+' || the_b == '-' || the_b == '*' || the_b == '/')
-        ) {
+        )
+        {
             Console.Write((char)the_y);
         }
     }
-    if (determined == 1 || determined == 2) {
+    if (determined == 1 || determined == 2)
+    {
         the_a = the_b;
-        if (the_a == '\'' || the_a == '"' || the_a == '`') {
-            for (; ; ) {
+        if (the_a == '\'' || the_a == '"' || the_a == '`')
+        {
+            for (; ; )
+            {
                 Console.Write((char)the_a);
                 the_a = get();
-                if (the_a == the_b) {
+                if (the_a == the_b)
+                {
                     break;
                 }
-                if (the_a == '\\') {
+                if (the_a == '\\')
+                {
                     Console.Write((char)the_a);
                     the_a = get();
                 }
-                if (the_a == EOF) {
+                if (the_a == EOF)
+                {
                     error("Unterminated string literal.");
                 }
             }
         }
     }
-    if (determined == 1 || determined == 2 || determined == 3) {
+    if (determined == 1 || determined == 2 || determined == 3)
+    {
         the_b = next();
         if (the_b == '/' && (
             the_a == '(' || the_a == ',' || the_a == '=' || the_a == ':'
@@ -174,44 +199,58 @@ void action(int determined) {
             || the_a == '?' || the_a == '+' || the_a == '-' || the_a == '~'
             || the_a == '*' || the_a == '/' || the_a == '{' || the_a == '}'
             || the_a == ';'
-        )) {
+        ))
+        {
             Console.Write((char)the_a);
-            if (the_a == '/' || the_a == '*') {
+            if (the_a == '/' || the_a == '*')
+            {
                 Console.Write(' ');
             }
             Console.Write((char)the_b);
-            for (;;) {
+            for (; ; )
+            {
                 the_a = get();
-                if (the_a == '[') {
-                    for (;;) {
+                if (the_a == '[')
+                {
+                    for (; ; )
+                    {
                         Console.Write((char)the_a);
                         the_a = get();
-                        if (the_a == ']') {
+                        if (the_a == ']')
+                        {
                             break;
                         }
-                        if (the_a == '\\') {
+                        if (the_a == '\\')
+                        {
                             Console.Write((char)the_a);
                             the_a = get();
                         }
-                        if (the_a == EOF) {
+                        if (the_a == EOF)
+                        {
                             error(
                                 "Unterminated set in Regular Expression literal."
                             );
                         }
                     }
-                } else if (the_a == '/') {
+                }
+                else if (the_a == '/')
+                {
                     int ch = peek();
-                    if (ch == '/' || ch == '*') {
+                    if (ch == '/' || ch == '*')
+                    {
                         error(
                             "Unterminated set in Regular Expression literal."
                         );
                     }
                     break;
-                } else if (the_a =='\\') {
+                }
+                else if (the_a == '\\')
+                {
                     Console.Write((char)the_a);
                     the_a = get();
                 }
-                if (the_a == EOF) {
+                if (the_a == EOF)
+                {
                     error("Unterminated Regular Expression literal.");
                 }
                 Console.Write((char)the_a);
@@ -228,81 +267,88 @@ void action(int determined) {
         Most spaces and linefeeds will be removed.
 */
 
-void jsmin() {
-    if (peek() == 0xEF) {
+void jsmin()
+{
+    if (peek() == 0xEF)
+    {
         get();
         get();
         get();
     }
     the_a = '\n';
     action(3);
-    while (the_a != EOF) {
-        switch (the_a) {
-        case ' ':
-            action(
-                is_alphanum(the_b)
-                ? 1
-                : 2
-            );
-            break;
-        case '\n':
-            switch (the_b) {
-            case '{':
-            case '[':
-            case '(':
-            case '+':
-            case '-':
-            case '!':
-            case '~':
-                action(1);
-                break;
+    while (the_a != EOF)
+    {
+        switch (the_a)
+        {
             case ' ':
-                action(3);
-                break;
-            default:
                 action(
                     is_alphanum(the_b)
                     ? 1
                     : 2
                 );
                 break;
-            }
-            break;
-        default:
-            switch (the_b) {
-            case ' ':
-                action(
-                    is_alphanum(the_a)
-                    ? 1
-                    : 3
-                );
-                break;
             case '\n':
-                switch (the_a) {
-                case '}':
-                case ']':
-                case ')':
-                case '+':
-                case '-':
-                case '"':
-                case '\'':
-                case '`':
-                    action(1);
-                    break;
-                default:
-                    action(
-                        is_alphanum(the_a)
-                        ? 1
-                        : 3
-                    );
-                    break;
+                switch (the_b)
+                {
+                    case '{':
+                    case '[':
+                    case '(':
+                    case '+':
+                    case '-':
+                    case '!':
+                    case '~':
+                        action(1);
+                        break;
+                    case ' ':
+                        action(3);
+                        break;
+                    default:
+                        action(
+                            is_alphanum(the_b)
+                            ? 1
+                            : 2
+                        );
+                        break;
                 }
                 break;
             default:
-                action(1);
+                switch (the_b)
+                {
+                    case ' ':
+                        action(
+                            is_alphanum(the_a)
+                            ? 1
+                            : 3
+                        );
+                        break;
+                    case '\n':
+                        switch (the_a)
+                        {
+                            case '}':
+                            case ']':
+                            case ')':
+                            case '+':
+                            case '-':
+                            case '"':
+                            case '\'':
+                            case '`':
+                                action(1);
+                                break;
+                            default:
+                                action(
+                                    is_alphanum(the_a)
+                                    ? 1
+                                    : 3
+                                );
+                                break;
+                        }
+                        break;
+                    default:
+                        action(1);
+                        break;
+                }
                 break;
-            }
-            break;
         }
     }
 }
@@ -312,9 +358,11 @@ void jsmin() {
         and then minify the input.
 */
 
-int Main(string[] args) {
+int Main(string[] args)
+{
     int i;
-    for (i = 1; i < args.Length; i += 1) {
+    for (i = 1; i < args.Length; i += 1)
+    {
         Console.WriteLine($"// {args[i]}\n");
     }
     jsmin();
